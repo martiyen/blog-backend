@@ -7,9 +7,9 @@
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
     "logs:prof": "fly logs",
-    "start": "node index.js",
-    "dev": "node_modules/.bin/nodemon index.js",
-    "test": "node --test",
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node_modules/.bin/nodemon index.js",
+    "test": "NODE_ENV=test node --test",
     "lint": "eslint ."
   },
   "author": "Martin Doyen",
@@ -19,8 +19,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "express-async-errors": "^3.1.1",
     "lodash": "^4.17.21",
-    "mongoose": "^8.9.5"
+    "mongoose": "^8.9.5",
+    "supertest": "^7.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
