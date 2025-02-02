@@ -1,9 +1,0 @@
-POST http://localhost:3001/api/blogs
-Content-Type: application/json
-
-{
-    "title": "How to cook without hands",
-    "author": "John Dennis",
-    "url": "http://www.cookwithnohands.com",
-    "likes": "0"
-}
