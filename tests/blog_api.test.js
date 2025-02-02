@@ -11,7 +11,7 @@ const helper = require('./test_helper')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
-describe('when there are some blogs saved initially', () => {
+describe.only('when there are some blogs saved initially', () => {
 
   beforeEach(async () => {
     await Blog.deleteMany({})
@@ -29,6 +29,7 @@ describe('when there are some blogs saved initially', () => {
 
     for (let blog of helper.initialBlogs) {
       let newBlog = new Blog(blog)
+      newBlog.user = user._id.toString()
       await newBlog.save()
     }
   })
@@ -47,9 +48,11 @@ describe('when there are some blogs saved initially', () => {
     assert(keys.includes('id'))
   })
 
-  describe('creating a new blog', () => {
+  describe.only('creating a new blog', () => {
 
     test('succeeds when valid', async () => {
+      const token = await helper.getToken()
+
       const newBlog = {
         title: 'First class tests',
         author: 'Robert C. Martin',
@@ -59,6 +62,7 @@ describe('when there are some blogs saved initially', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -72,7 +76,30 @@ describe('when there are some blogs saved initially', () => {
       assert(titles.includes('First class tests'))
     })
 
+    test.only('fails with status code 401 when token is not provided', async () => {
+      const newBlog = {
+        title: 'First class tests',
+        author: 'Robert C. Martin',
+        url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+        likes: 10
+      }
+
+      const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+
+      assert(response.body.error.includes('jwt must be provided'))
+    })
+
     test('succeeds when likes is undefined and sets it to 0', async () => {
+      const token = await helper.getToken()
+
       const newBlog = {
         title: 'First class tests',
         author: 'Robert C. Martin',
@@ -81,6 +108,7 @@ describe('when there are some blogs saved initially', () => {
 
       const addedBlog = await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -89,6 +117,8 @@ describe('when there are some blogs saved initially', () => {
     })
 
     test('fails with status 400 when title is undefined', async () => {
+      const token = await helper.getToken()
+
       const newBlog = {
         author: 'Robert C. Martin',
         url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll'
@@ -96,6 +126,7 @@ describe('when there are some blogs saved initially', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
 
@@ -105,6 +136,8 @@ describe('when there are some blogs saved initially', () => {
     })
 
     test('fails with status 400 when url is undefined', async () => {
+      const token = await helper.getToken()
+
       const newBlog = {
         title: 'First class tests',
         author: 'Robert C. Martin'
@@ -112,6 +145,7 @@ describe('when there are some blogs saved initially', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
 
@@ -121,14 +155,17 @@ describe('when there are some blogs saved initially', () => {
     })
   })
 
-  describe('deleting a blog', () => {
+  describe.only('deleting a blog', () => {
 
     test('succeeds when valid', async () => {
+      const token = await helper.getToken()
+
       const initialBlogs = await helper.blogsInDb()
       const blogToDelete = initialBlogs[0]
 
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(204)
 
       const finalBlogs = await helper.blogsInDb()
@@ -140,12 +177,14 @@ describe('when there are some blogs saved initially', () => {
       assert(!finalBlogsIds.includes(blogToDelete.id))
     })
 
-    test('fails with status 400 when id is invalid', async () => {
+    test.only('fails with status 400 when id is invalid', async () => {
+      const token = await helper.getToken()
       const initialBlogs = await helper.blogsInDb()
       const invalidId = 123456
 
       await api
         .delete(`/api/blogs/${invalidId}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(400)
 
       const finalBlogs = await helper.blogsInDb()

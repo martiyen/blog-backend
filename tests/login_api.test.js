@@ -22,9 +22,9 @@ beforeEach(async () => {
   await user.save()
 })
 
-describe.only('login', () => {
+describe('login', () => {
 
-  test.only('succeeds with valid credentials with status code 200 and returns token', async () => {
+  test('succeeds with valid credentials with status code 200 and returns token', async () => {
     const credentials = {
       username : 'jdoe',
       password: 'abc123'
@@ -39,7 +39,7 @@ describe.only('login', () => {
     assert(response.body.token)
   })
 
-  test.only('fails when invalid credentials with status code 401', async () => {
+  test('fails when invalid credentials with status code 401', async () => {
     const credentials = {
       username : 'jdoe',
       password: 'abc456'
