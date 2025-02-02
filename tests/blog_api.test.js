@@ -11,7 +11,7 @@ const helper = require('./test_helper')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
-describe.only('when there are some blogs saved initially', () => {
+describe('when there are some blogs saved initially', () => {
 
   beforeEach(async () => {
     await Blog.deleteMany({})
@@ -47,9 +47,9 @@ describe.only('when there are some blogs saved initially', () => {
     assert(keys.includes('id'))
   })
 
-  describe.only('creating a new blog', () => {
+  describe('creating a new blog', () => {
 
-    test.only('succeeds when valid', async () => {
+    test('succeeds when valid', async () => {
       const newBlog = {
         title: 'First class tests',
         author: 'Robert C. Martin',
