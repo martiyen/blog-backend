@@ -2,17 +2,30 @@ const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcrypt')
 const app = require('../app')
 const api = supertest(app)
 
 const helper = require('./test_helper')
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
-describe('when there are some blogs saved initially', () => {
+describe.only('when there are some blogs saved initially', () => {
 
   beforeEach(async () => {
     await Blog.deleteMany({})
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('abc123', 10)
+
+    const user = new User({
+      username: 'mdoyen',
+      name: 'Martin Doyen',
+      passwordHash: passwordHash
+    })
+
+    await user.save()
 
     for (let blog of helper.initialBlogs) {
       let newBlog = new Blog(blog)
@@ -34,9 +47,9 @@ describe('when there are some blogs saved initially', () => {
     assert(keys.includes('id'))
   })
 
-  describe('creating a new blog', () => {
+  describe.only('creating a new blog', () => {
 
-    test('succeeds when valid', async () => {
+    test.only('succeeds when valid', async () => {
       const newBlog = {
         title: 'First class tests',
         author: 'Robert C. Martin',
