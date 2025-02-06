@@ -10,6 +10,7 @@
     "start": "NODE_ENV=production node index.js",
     "dev": "NODE_ENV=development node_modules/.bin/nodemon index.js",
     "test": "NODE_ENV=test node --test",
+    "start:test": "NODE_ENV=test node index.js",
     "lint": "eslint ."
   },
   "author": "Martin Doyen",
